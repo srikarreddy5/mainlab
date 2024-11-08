@@ -1,30 +1,26 @@
-version: '3.8'  # Ensure you're using a compatible version of Docker Compose
-
+version: '3'
 services:
   web:
-    image: nginx:latest  # Or replace with your web service image
-    container_name: mainpipe_web_1
+    image: nginx:latest
     ports:
-      - "5050:80"  # Expose port 80 of the container to port 8080 on the host
+      - "5000:80"  # Change to use a different port as 80 is already in use
     volumes:
-      - ./web:/usr/share/nginx/html  # Mount your local directory to the container
-    environment:
-      - NGINX_HOST=localhost
-      - NGINX_PORT=80
-    depends_on:
-      - db  # Ensure db starts before web
-
+      - ./html:/usr/share/nginx/html  # Ensure ./html directory exists
+    networks:
+      - app-network
   db:
-    image: mysql:latest  # Use the appropriate image for your DB (MySQL, PostgreSQL, etc.)
-    container_name: mainpipe_db_1
+    image: mysql:5.7
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword  # Set your root password
-      MYSQL_DATABASE: exampledb  # Database to create
-      MYSQL_USER: user
-      MYSQL_PASSWORD: userpassword
+      MYSQL_ROOT_PASSWORD: example
+      MYSQL_DATABASE: app_db
+    networks:
+      - app-network
     volumes:
-      - db_data:/var/lib/mysql  # Mount persistent storage for database
+      - db_data:/var/lib/mysql  # Ensure the volume is named and properly mapped
+
+networks:
+  app-network:
+    driver: bridge
 
 volumes:
-  db_data:  # Define a named volume for the database data
-    driver: local  # Ensure a local driver is used for persistence
+  db_data:  # Define a named volume for persistent MySQL data
