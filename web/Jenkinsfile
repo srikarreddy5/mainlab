@@ -1,0 +1,44 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_COMPOSE = '/usr/local/bin/docker-compose'  // Path to docker-compose binary
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git 'https://github.com/yourusername/your-repository.git'
+            }
+        }
+
+        stage('Build and Deploy') {
+            steps {
+                script {
+                    // Build and bring up the containers in detached mode
+                    sh """
+                    ${DOCKER_COMPOSE} up -d --build
+                    """
+                }
+            }
+        }
+
+        stage('Test Deployment') {
+            steps {
+                script {
+                    // Optionally test if containers are up and running
+                    sh 'curl http://localhost'
+                }
+            }
+        }
+
+        stage('Clean Up') {
+            steps {
+                script {
+                    // Optionally clean up after testing
+                    sh "${DOCKER_COMPOSE} down"
+                }
+            }
+        }
+    }
+}
