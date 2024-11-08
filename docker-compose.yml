@@ -3,7 +3,7 @@ services:
   web:
     image: nginx:latest
     ports:
-      - "80:80"
+      - "5000:80"  # Change the host port to 5000 (or another available port)
     volumes:
       - ./html:/usr/share/nginx/html
     networks:
